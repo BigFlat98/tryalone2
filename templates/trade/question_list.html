@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}거래 목록 - NewProject{% endblock %}
+
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr class="table-dark">
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성일시</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if question_list %}
+                {% for question in question_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'trade:detail' question.id %}">{{ question.subject }}</a>
+                        </td>
+                        <td>{{ question.create_date }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="3">거래가 없습니다.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+        
+    </table>
+    <a href="{% url 'trade:question_create' %}" class='btn btn-primary'>거래 등록</a>
+{% endblock %}
