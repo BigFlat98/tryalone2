@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load trade_filter %}
 {% block title %}거래 목록 - NewProject{% endblock %}
 
 {% block content %}
@@ -14,9 +15,14 @@
             {% if question_list %}
                 {% for question in question_list %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <!--총 레코드 수 - 각 페이지의 시작 인덱스(1부터 시작, 1,11,21,31...) - for문이 돌 때 마다 1씩 증가(시작 0) + 1(start_index가 1부터 시작이라서 맞춰주기 위해)
+                            전체 레코드 수에서 페이지가 바뀌었을 때 첫번째 레코드 인덱스 정해주기 위해 start_index빼고, 레코드 하나씩 추가될 때 마다 인덱스 하나씩 빼주기 위해 forloop 빼주고-->
+                        <td>{{question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1}}</td>
                         <td>
                             <a href="{% url 'trade:detail' question.id %}">{{ question.subject }}</a>
+                            {% if question.answer_set.count > 0 %}
+                            <span class="text-danger small mx-2">[{{ question.answer_set.count }}]</span>
+                            {% endif %}
                         </td>
                         <td>{{ question.create_date }}</td>
                     </tr>
@@ -29,5 +35,41 @@
         </tbody>
         
     </table>
+    <ul class="pagination justify-content-center">
+        {% if question_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.previous_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+
+        {% for page_number in question_list.paginator.page_range %}
+            {% if page_number >= question_list.number|add:-2 and page_number <= question_list.number|add:2%}
+                {% if page_number == question_list.number %}
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if question_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        </li>
+        {% endif %}
+
+    </ul>
     <a href="{% url 'trade:question_create' %}" class='btn btn-primary'>거래 등록</a>
 {% endblock %}

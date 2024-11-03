@@ -3,11 +3,15 @@ from django.http import HttpResponse,HttpResponseNotAllowed
 from .models import Question, Answer
 from django.utils import timezone
 from .forms import QuestionForm, AnswerForm
+from django.core.paginator import Paginator
 
 # Create your views here.
 def index(request):
+    page = request.GET.get('page','1')
     question_list = Question.objects.order_by('-create_date')
-    return render(request, "trade/question_list.html", {"question_list":question_list})
+    paginator = Paginator(question_list,10)
+    page_obj = paginator.get_page(page)
+    return render(request, "trade/question_list.html", {"question_list":page_obj})
 
 def detail(request,question_id):
     question = get_object_or_404(Question, pk=question_id)
