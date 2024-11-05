@@ -17,8 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from trade import urls as trade_urls
+from trade import views as trade_views
+from common import urls as common_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('trade/', include(trade_urls)),
+    path('common/', include(common_urls)),
+    path('',trade_views.index , name='home' ),
 ]
