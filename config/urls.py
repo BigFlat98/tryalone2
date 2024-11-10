@@ -21,6 +21,8 @@ from trade import views as trade_views
 from common import urls as common_urls
 from .views import HomeView
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('trade/', include(trade_urls)),

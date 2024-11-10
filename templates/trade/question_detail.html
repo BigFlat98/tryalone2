@@ -10,10 +10,18 @@
                 <div class="card-text" style="white-space: pre-line;">{{ question.content }}</div>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2">
+                        {{ question.author.username }}
+                    </div>
+                    <div class="badge bg-light text-dark p-2">
                         {{ question.create_date }}
                     </div>
                 </div>
+                
             </div>
+            {% if request.user == question.author %}
+            <a  class="btn btn-light" href ="{% url 'trade:question_modify' question.id %}">수정</a>
+            <a  class="btn btn-danger delete" href ="javascript:void(0)" data-uri="{% url 'trade:question_delete' question.id  %}">삭제</a>
+            {% endif %}
         </div>
 
         <!-- 답변 -->
@@ -24,9 +32,16 @@
                     <div class="card-text" style="white-space: pre-line;">{{ answer.content }}</div>
                     <div class="d-flex justify-content-end">
                         <div class="badge bg-light text-dark p-2">
+                            {{ answer.author.username }}
+                        </div>
+                        <div class="badge bg-light text-dark p-2">
                             {{ answer.create_date|date:"Y년 m월 d일 H시 i분" }}
                         </div>
                     </div>
+                    {% if request.user == answer.author %}
+                    <a  class="btn btn-light" href ="{% url 'trade:answer_modify' answer.id%}">수정</a>
+                    <a  class="btn btn-danger delete" href ="javascript:void(0)" data-uri="{% url 'trade:answer_delete' answer.id  %}">삭제</a>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
@@ -50,9 +65,22 @@
             <!-- 오류표시 End -->
             <div class="mb-3">
                 <label for="content" class="form-label">답변내용</label>
-                <textarea name="content" id="content" class="form-control" rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
+                <textarea {% if not user.is_authenticated %}disabled{% endif %} name="content" id="content" class="form-control" rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
             </div>
             <input type="submit" value="답변등록" class="btn btn-primary">
         </form>
     </div>
+{% endblock %}
+
+{%block extra-script %}
+<script type='text/javascript'>
+    const delete_elements = document.getElementsByClassName("delete");
+    Array.from(delete_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            if(confirm("정말로 삭제하시겠습니까?")) {
+                location.href = this.dataset.uri;
+            };
+        });
+    });
+</script>
 {% endblock %}
