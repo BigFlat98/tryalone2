@@ -3,6 +3,16 @@
 
 {% block content %}
     <div class="container my-3">
+        {% if messages %}
+        <div class="alert alert-danger my-3" role="alert">
+            {% for message in messages%}
+            <strong>{{message.tags}}</strong>
+            <ul>
+                <li>{{message.message}}</li>
+            </ul>
+            {% endfor %}
+        </div>
+        {% endif %}
         <!-- 질문 -->
         <h2 class="border-bottom py-2">{{ question.subject }}</h2>
         <div class="card my-3">
@@ -22,6 +32,13 @@
             <a  class="btn btn-light" href ="{% url 'trade:question_modify' question.id %}">수정</a>
             <a  class="btn btn-danger delete" href ="javascript:void(0)" data-uri="{% url 'trade:question_delete' question.id  %}">삭제</a>
             {% endif %}
+
+            <div class="my-3">
+                <a href="javascript:void(0)" data-uri="{% url 'trade:question_vote' question.id %}"
+                   class="recommend btn btn-sm btn-outline-secondary"> 추천
+                    <span class="badge rounded-pill bg-success">{{ question.voter.count }}</span>
+                </a>
+            </div>
         </div>
 
         <!-- 답변 -->
@@ -42,6 +59,12 @@
                     <a  class="btn btn-light" href ="{% url 'trade:answer_modify' answer.id%}">수정</a>
                     <a  class="btn btn-danger delete" href ="javascript:void(0)" data-uri="{% url 'trade:answer_delete' answer.id  %}">삭제</a>
                     {% endif %}
+                </div>
+                <div class="my-3">
+                    <a href="javascript:void(0)" data-uri="{% url 'trade:answer_vote' answer.id %}"
+                       class="recommend btn btn-sm btn-outline-secondary"> 추천
+                        <span class="badge rounded-pill bg-success">{{ answer.voter.count }}</span>
+                    </a>
                 </div>
             </div>
         {% endfor %}
@@ -78,6 +101,14 @@
     Array.from(delete_elements).forEach(function(element) {
         element.addEventListener('click', function() {
             if(confirm("정말로 삭제하시겠습니까?")) {
+                location.href = this.dataset.uri;
+            };
+        });
+    });
+    const recommend_elements = document.getElementsByClassName("recommend");
+    Array.from(recommend_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            if(confirm("정말로 추천하시겠습니까?")) {
                 location.href = this.dataset.uri;
             };
         });
