@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404,resolve_url
 from django.http import HttpResponseNotAllowed
 from ..models import Question, Answer
 from django.utils import timezone
 from ..forms import  AnswerForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
 
 @login_required(login_url='common:login')
 def answer_create(request, question_id):
@@ -17,7 +18,7 @@ def answer_create(request, question_id):
             answer.create_date = timezone.now()
             answer.question = question
             answer.save()
-            return redirect('trade:detail', question_id=question.id)
+            return redirect('{}#answer_{}'.format(resolve_url('trade:detail',question_id = question.id),answer.id))
     else:
         return HttpResponseNotAllowed('Only POST is possible.')
     context = {'question': question, 'form': form} 
@@ -36,7 +37,7 @@ def answer_modify(request, answer_id):
             answer = form.save(commit=False)
             answer.modify_date = timezone.now()
             answer.save()
-            return redirect('trade:detail', question_id=answer.question.id)
+            return redirect('{}#answer_{}'.format(resolve_url('trade:detail',question_id = answer.question.id),answer.id))
     else:
         form = AnswerForm(instance=answer)
     context = {'form': form}
